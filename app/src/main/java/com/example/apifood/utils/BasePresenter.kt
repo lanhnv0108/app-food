@@ -1,7 +1,5 @@
 package com.example.apifood.utils
 
-import android.view.View
-
 interface BasePresenter<T> {
     fun onStart()
 

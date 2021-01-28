@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.apifood.data.source.remote.fetchjson
 
 import android.os.AsyncTask
@@ -6,6 +8,7 @@ import com.example.apifood.data.source.remote.OnFetchDataListener
 import org.json.JSONObject
 import java.lang.Exception
 
+@Suppress("DEPRECATION")
 class GetJsonFromUrl<T>(
     private val listener: OnFetchDataListener<T>,
     private val keyEntity : String

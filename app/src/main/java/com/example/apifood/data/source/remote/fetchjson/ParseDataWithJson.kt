@@ -1,52 +1,56 @@
 package com.example.apifood.data.source.remote.fetchjson
 
-import android.util.Log
 import com.example.apifood.data.model.FoodEntry
 import com.example.apifood.utils.Constant
 import org.json.JSONObject
+import java.io.BufferedInputStream
 import java.io.BufferedReader
+import java.io.InputStream
 import java.io.InputStreamReader
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.net.HttpURLConnection
 import java.net.URL
 
 class ParseDataWithJson {
     fun getJonFromUrl(urlString: String?): String {
         val url = URL(urlString)
-//        val url = URL("https://api.themoviedb.org/3/movie/upcoming?api_key=39902402e11902d8df5588a64ccf67c0&language=en-US")
         val httpURLConnection = url.openConnection() as HttpURLConnection
         httpURLConnection.apply {
             connectTimeout = TIME_OUT
             readTimeout = TIME_OUT
             requestMethod = METHOD_GET
-            setRequestProperty(Constant.BASE_NAME_KEY , Constant.BASE_VALUE_KEY)
-            setRequestProperty("Cookie","fbcity=1; zl=en; fbtrack=c71b2c108e2ee2ba07778816a5b1ddf9; AWSALBTG=extjXjlO1qhtJqbLjhyguMfhFJVW9OyX//a9cQb9StXYhB4fkDX9jU+UVU+rpSDxiBxQdzxPp5ju1ez4zuteEQAEH7BHVFgJWk0/UUyd1RnAUZHVrrJUSGrzZTu6OVIWbPg2Sxsat1xm4914bRTqHxrJuz+3EEjPeRS0Akey3Cf2OmTOHXw=; AWSALBTGCORS=extjXjlO1qhtJqbLjhyguMfhFJVW9OyX//a9cQb9StXYhB4fkDX9jU+UVU+rpSDxiBxQdzxPp5ju1ez4zuteEQAEH7BHVFgJWk0/UUyd1RnAUZHVrrJUSGrzZTu6OVIWbPg2Sxsat1xm4914bRTqHxrJuz+3EEjPeRS0Akey3Cf2OmTOHXw=; csrf=24f3616e8e19611d958b227728045af3")
-            doOutput = true
+            setRequestProperty(Constant.BASE_NAME_KEY, Constant.BASE_VALUE_KEY)
             doOutput = true
             connect()
-            Log.e("TEST" , httpURLConnection.responseCode.toString())
         }
-        val bufferedReader = BufferedReader(InputStreamReader(url.openStream()))
-        val stringBuilder = StringBuilder()
-        var line: String?
-        while (bufferedReader.readLine().also { line = it } != null) {
-            stringBuilder.append(line)
+        val statusCode = httpURLConnection.responseCode
+        if (statusCode == 200) {
+            val bufferedInputStream =
+                BufferedInputStream(httpURLConnection.inputStream) as InputStream
+            val bufferedReader = BufferedReader(InputStreamReader(bufferedInputStream))
+            val stringBuilder = StringBuilder()
+            var line: String?
+            while (bufferedReader.readLine().also { line = it } != null) {
+                stringBuilder.append(line)
+            }
+            bufferedInputStream.close()
+            bufferedReader.close()
+            httpURLConnection.disconnect()
+            return stringBuilder.toString()
         }
-        Log.e("TEST", stringBuilder.toString())
-        bufferedReader.close()
-        httpURLConnection.disconnect()
-        return stringBuilder.toString()
+        return ""
     }
 
-    fun parseJsonToData(jsonObject: JSONObject?, keyEntity: String): Any? {
+    fun parseJsonToData(jsonObject: JSONObject?, keyEntity: String): Any {
         val data = mutableListOf<Any>()
-        Log.e("ARRAY", jsonObject?.getJSONArray("results").toString())
         try {
             val jsonArray = jsonObject?.getJSONArray(keyEntity)
-            for (i in 0 until (jsonArray?.length() ?: 0)){
+            for (i in 0 until (jsonArray?.length() ?: 0)) {
                 val jsonObjects = jsonArray?.getJSONObject(i)
-                val itemFood = ParseDataWithJson().parseJsonToObject(/*Get Object item i */jsonObjects?.getJSONObject(FoodEntry.COLLECTION) , keyEntity)
+                val itemFood =
+                    ParseDataWithJson().parseJsonToObject(/*Get Object item i */jsonObjects?.getJSONObject(
+                        FoodEntry.COLLECTION
+                    ), keyEntity
+                    )
                 itemFood?.let {
                     data.add(it)
                 }

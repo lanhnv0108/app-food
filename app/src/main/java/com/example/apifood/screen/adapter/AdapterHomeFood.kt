@@ -3,8 +3,6 @@ package com.example.apifood.screen.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
-import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.apifood.R
@@ -48,8 +46,9 @@ class AdapterHomeFood : RecyclerView.Adapter<AdapterHomeFood.ViewHolder>() {
         private var listener: OnItemRecyclerViewClickListener<Food>? = null
 
         fun binData(food: Food) {
-            itemView.title.text = food.title
-            itemView.description.text = food.description
+            itemView.title.text = food.title.trim()
+            itemView.description.text = food.description.trim()
+            itemView.setOnClickListener(this)
             listener = itemListener
             getImage(food)
         }

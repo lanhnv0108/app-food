@@ -7,6 +7,7 @@ import com.example.apifood.data.source.FoodDataSource
 import com.example.apifood.data.source.remote.fetchjson.GetJsonFromUrl
 import com.example.apifood.utils.Constant
 
+@Suppress("DEPRECATION")
 class FoodRemoteDataSource : FoodDataSource.Remote {
     private val baseUrl = Constant.BASE_URL + Constant.BASE_CITY
 
